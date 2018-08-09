@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<HTML>
+	<HEAD>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>IDS Schnittstelle</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+		<script src="js/jquery-1.12.4.js" type="text/javascript"></script>
+		<script src="js/main.js" type="text/javascript"></script>
+		<script src="js/calculations.js" type="text/javascript"></script>
+		<script src="js/util.js" type="text/javascript"></script>
+		<script src="js/report.js" type="text/javascript"></script>
+		<script src="js/bestand.js" type="text/javascript"></script>
+		<script src="js/jquery-ui.js" type="text/javascript"></script>
+		<script src="js/iconselect.js" type="text/javascript"></script>
+		<script src="js/warenkorbsso.js" type="text/javascript"></script>
+	</HEAD>
+	<BODY>
+		<!-- https://www.onlineshop.buderus.de/fis/fisesales/z_login_ids.htm -->
+		<!-- https://www.onlineshop.buderus.de/ESALES/login_ids.htm -->
+		<FORM style="width: 400px" id="IDS-FORM" action="https://www.onlineshop.buderus.de/ESALES/login_ids.htm" method='post' name='IDS-SUBMIT-FORM' accesskey='' enctype='multipart/form-data; charset=ISO-8859-1' accept-charset='UTF-8'>
+			<INPUT type="hidden" name='kndnr'      value='Kundennummer'>
+			<INPUT type="hidden" name='pw_kunde'   value='Passwort'>
+			<INPUT type="hidden" name='action'     value='WKS'>
+			<INPUT type="hidden" name='hookurl'    value='https://www.bestellservice.buderus.de/ids_test/ids.htm?guid=123'>
+			<INPUT type="hidden" name='name_kunde' value=''>
+			<INPUT type="hidden" name='version'    value='1.2'>
+			<INPUT type="hidden" name='warenkorb'  value='<?xml version="1.0" encoding="UTF-8"?>
+			<Warenkorb xmlns="http://www.itek.de/Shop-Anbindung/Warenkorb/"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation="http://www.itek.de/Shop-Anbindung/Warenkorb/warenkorb.xsd">
+			<WarenkorbInfo>
+			<Date></Date>
+			<Time></Time>
+			<RueckgabeKZ></RueckgabeKZ>
+			<Version>1.2</Version>
+			</WarenkorbInfo>
+			<Order>
+			<OrderInfo>
+			<InquiryNo></InquiryNo>
+			<PartNo></PartNo>
+			<OrderConfNo></OrderConfNo>
+			<DeliveryDate></DeliveryDate>
+			<ModeOfShipment>Lieferung</ModeOfShipment>
+			<Cur>EUR</Cur>
+			<ZusatzText></ZusatzText>
+			<Kommission></Kommission>
+			</OrderInfo>
+			<SupplierInfo>
+			<IDNo></IDNo>
+			<Address>
+			<Name1></Name1>
+			<Name2></Name2>
+			<Street> 1</Street>
+			<PCode></PCode>
+			<City></City>
+			<Country></Country>
+			<ILN></ILN>
+			<Contact></Contact>
+			<Phone></Phone>
+			<Fax></Fax>
+			<Email></Email>
+			</Address>
+			</SupplierInfo>
+			<CustomerInfo>
+			<IDNo></IDNo>
+			<Address>
+			<Name1></Name1>
+			<Name2></Name2>
+			<Name3></Name3>
+			<Name4></Name4>
+			<Street></Street>
+			<PCode></PCode>
+			<City></City>
+			<Country></Country>
+			<ILN></ILN>
+			<Contact></Contact>
+			<Phone></Phone>
+			<Fax></Fax>
+			<Email></Email>
+			</Address>
+			</CustomerInfo>
+			<DeliveryPlaceInfo>
+			<Address>
+			<Name1></Name1>
+			<Name2></Name2>
+			<Name3></Name3>
+			<Name4></Name4>
+			<Street></Street>
+			<PCode></PCode>
+			<City></City>
+			<Country></Country>
+			<ILN></ILN>
+			<Contact></Contact>
+			<Phone></Phone>
+			<Fax></Fax>
+			<Email></Email>
+			</Address>
+			</DeliveryPlaceInfo>
+			%%%CARTITEMS%%%
+			</Order>
+			</Warenkorb>'>
+		</FORM>
+		<script>
+			document.forms[0].submit();
+		</script>
+	</BODY>
+</HTML>

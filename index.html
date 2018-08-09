@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html style="position:fixed" lang="de">
+<head>
+    <title>ProDimension</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name=“viewport” content=“viewport-fit=cover, width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no”>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-dialog.css">
+    <link rel="stylesheet" href="css/jquery-ui.css">
+    <link rel="stylesheet" href="css/main.css">
+
+    <script src="libs/jquery.min.js" type="text/javascript"></script>
+    <script src="libs/jquery-1.12.4.js" type="text/javascript"></script>
+    <script src="libs/jquery-ui.js" type="text/javascript"></script>
+    <script src="libs/bootstrap.min.js"></script>
+
+    <script src="libs/iconselect.js" type="text/javascript"></script>
+    <script src="libs/bootstrap-dialog.js"></script>
+    <script src="libs/jspdf.js"></script>
+    <script src="libs/base64.js"></script>
+    <script src="libs/sprintf.js"></script>
+
+    <script src="js/styleChanger.js" type="text/javascript"></script>
+    <script src="js/DBManager.js"></script>
+    <script src="js/dbHandler.js"></script>
+    <script src="js/main.js" type="text/javascript"></script>
+    <script src="js/calculations.js" type="text/javascript"></script>
+    <script src="js/report.js"></script>
+    <script src="js/util.js" type="text/javascript"></script>
+    <script src="js/bestand.js" type="text/javascript"></script>
+
+    <script src="js/helper.js"></script>
+
+</head>
+
+<body   style="position:fixed !important" onload="init()">
+
+<div style="display: none" id="translate">
+    <p id="ja" class="ja">Ja</p>
+    <p id="nein" class="nein">Nein</p>
+    <p id="ok" class="ok">OK</p>
+    <p id="msg_temp_rueck_warning2" class="msg_temp_rueck_warning2">Geben Sie bitte für die Rücklauftemperatur
+        eine Temperatur zwischen 25 und 89 Grad ein.</p>
+
+    <p id="msg_temp_rueck_warning" class="msg_temp_rueck_warning">Mindestdifferenz zwischen Vorlauftemperatur und
+        Rücklauftemperatur beträgt +1 Grad, Rücklauftemperatur wird entsprechend angepasst.</p>
+
+    <p id="msg_temp_vor_warning" class="msg_temp_vor_warning">Mindestdifferenz zwischen Vorlauftemperatur und
+        Rücklauftemperatur beträgt +1 Grad, Vorlauftemperatur wird entsprechend angepasst.</p>
+
+    <p id="msg_temp_vor_warning2" class="msg_temp_vor_warning2">Geben Sie bitte für die Vorlauftemperatur eine
+        Temperatur zwischen 30 und 90 Grad ein.</p>
+    <p id="msg_leistung_warning" class="msg_leistung_warning">Die Heizkörper-Wärmeleistung ist geringer als die
+        eingegebene Wärmeleistung! Trotzdem Übernehmen?</p>
+    <p id="msg_temp_warning" class="msg_temp_warning">Geben Sie bitte für die Raumtemperatur eine Temperatur
+        zwischen 10 und 30 Grad ein.</p>
+    <p id="msg_raum_watt_warning" class="msg_raum_watt_warning">Geben Sie bitte für die Heizlast einen Wert
+        zwischen 100 und 16000 Watt ein.</p>
+    <p id="msg_druck_warning" class="msg_druck_warning">Die Eingabe des Differenzdrucks ist auf 200 mbar
+        beschränkt!</p>
+    <p id="msg_toCart_yes" class="msg_toCart_yes">Artikel wurde aufgenommen!</p>
+    <p id="msg_toCart" class="msg_toCart">Möchten Sie den Artikel in den technischen Report aufnehmen?</p>
+    <p id="msg_toCart_zubehoer_yes" class="msg_toCart_zubehoer_yes">Bitte geben sie eine Stückzahl für den
+        Artikel ein.</p>
+    <p id="msg_waermeleistung_warning" class="msg_waermeleistung_warning">Bitte geben Sie eine positive Zahl
+        ein.</p>
+    <p id="msg_removeReport" class="msg_removeReport"> Soll der gewählte Artikel wirklich aus dem technischen Report
+        entfernt werden? </p>
+    <p class="msg_ugs_bud" id="msg_ugs_bud">Bitte geben Sie die Buderuskennung aus Ihrem kaufmännischen Programm ein
+        (max. 4 Zeichen)</p>
+    <p class="abbrechen" id="abbrechen"> Abbrechen </p>
+
+    <p id="layer_info" class="layer_info"></p>
+    <p id="preis_currency" class="preis_currency">Preis EUR
+    <p/>
+    <p id="rabatt" class="rabatt"> Rabattgr.
+    <p/>
+    <p id="prodno" class="prodno"> Artikelnr.
+    <p/>
+    <p id="breite" class="breite">Breite</p>
+    <p id="seitenanschluss" class="seitenanschluss">Seitenanschluss</p>
+    <p class="mittenanschluss">Mittenanschluss</p>
+    <p class="farbenauswahl">Farbenauswahl</p>
+    <p class="bauhoehe"></p>
+    <p id="set" class="set">Übernehmen</p>
+    <p class="stueck" id="stueck">Stück</p>
+    <p class="kurztext" id="Kurztext"></p>
+    <p class="einheit" id="einheit">Einheit</p>
+    <p class="warning" id="warning"> Warnung </p>
+    <p class="msg_toCart_succes" id="msg_toCart_succes"> Artikel wurde aufgenommen! </p>
+</div>
+
+<div class="wrapper" style="position:fixed">
+    <header>
+        <div class="div-header">
+            <ul>
+                <li  style="display: block;  background-color: transparent">
+                    <h1 class="nav_header" style="text-align: left; padding-right: 2%; padding-top: 0px; letter-spacing: 0px; background-color: transparent; font-size: x-large" >
+                        ProDimension </h1>
+                </li>
+
+                <li  style="display: none">
+                    <h2 class="nav_header" style="float: right; padding-right: 0%; display: none" name="heizkoerperauswahlhilfe">
+                        Heizkörperauswahlhilfe </h2>
+                </li>
+
+                <li  style="display: none">
+                    <h3 class="nav_header" style="float: right; padding-right: 2%; padding-left: 2%;display: none" name="heizkoerperauswahlhilfe">
+                        | </h3>
+                </li>
+                <li  style="display: none">
+                    <h3 class="nav_header" style="float: right;  display: none" id="profil_title">VC-Profil</h3>
+                </li>
+
+                <li style="display: none"><img class="img-hamburger">
+                    <div id="my-icon-select"></div>
+                </li>
+
+
+            </ul>
+        </div>
+    </header>
+
+
+    <div id="dialog-confirm">
+
+
+    </div>
+
+
+    <div id="left_nav_container" class="nav-left">
+        <img id="img-container" style="top: 0px;" align="middle" src="images/logo.png"/>
+        <div class="nav-left_container">
+            <div class="div-hk">
+                <div class="div-hk">
+                    <p class="p-hk">Logatrend Profil</p>
+                    <p class="hk-type profil" id="VC-Profil" onclick="setProfile('VC-Profil')">VC-Profil</p>
+                    <p class="hk-type profil" id="VCM-Profil" onclick="setProfile('VCM-Profil')"><span>VCM-Profil</span>
+                    </p>
+                    <p class="hk-type profil" id="C-Profil" onclick="setProfile('C-Profil')">
+                        <span>C-Profil</span></p>
+                    <p class="hk-type profil" id="CV-Profil" onclick="setProfile('CV-Profil')">
+                        <span>CV-Profil</span>
+                    </p>
+                </div>
+                <p class="p-hk">Logatrend Plan</p>
+                <p class="hk-type plan" onclick="setProfile('VC-Plan')" id="VC-Plan"><span>VC-Plan</span></p>
+                <p class="hk-type plan" onclick="setProfile('VCM-Plan')" id="VCM-Plan"><span>VCM-Plan</span>
+                </p>
+                <p class="hk-type plan" onclick="setProfile('C-Plan')" id="C-Plan"><span>C-Plan</span></p>
+                <p class="hk-type plan" onclick="setProfile('CV-Plan')" id="CV-Plan"><span>CV-Plan</span></p>
+
+                <p class="p-hk">Logatrend Therm </p>
+                <p class="hk-type therm direct" id="Therm-Direct" onclick="initThermView('Therm Direct')">Therm
+                    Direct</p>
+                <p class="hk-type therm E" id="Therm-Direct-E" onclick="initThermView('Therm Direct E')">Therm Direct E</p>
+                <p class="hk-type therm curve" id="Therm-Curve" onclick="initThermView('Therm Curve')">Therm Curve</p>
+                <p class="hk-type therm E" id="Therm-Curve-E" onclick="initThermView('Therm Curve E')">Therm Curve E</p>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div style="display: none;" id="loadingView" >
+        <div style="z-index: 10; position: absolute;  width: 100%; height: 100%; background-color: rgba(0,0,0,0.3); background-repeat: no-repeat">
+        </div>
+        <div style="z-index: 10; position: absolute; left: 25%; top: 25%; background-color: black; width: 600px; height: 300px; opacity: 0.5">
+        </div>
+        <div style="z-index: 10; text-align: center; position: absolute; left: 250px; top: 25%; background-color: transparent; opacity: 1; width: 57%; height: 50%">
+            <div style="display: block; background-color: transparent; position: absolute; left: 40%; top: 25%">
+                <h3 id="loading_percent"
+                    style="color: white;text-align: center; position: absolute; z-index:20; left: 35%; top: 25%">
+                    0%</h3>
+                <img src="images/loading3.gif" width="70%">
+
+            </div>
+            <h3 id="loading_label" style="color: white; padding-top: 230px; text-align: center">App wird für die
+                erste
+                Benutzung vorbereitet...</h3>
+
+        </div>
+    </div>
+
+
+    <div id="container">
+
+        <div  id="tabbar-div">
+            <ul class="tabbar">
+                <li  onclick="onChangeMenu('tabs_calculation')">
+                    <button id="button-calculation" class="button-calculation tab-button"><b></b>
+                    </button>
+                </li>
+                <li  onclick="onChangeMenu('tabs_bestand')">
+                    <button id="button-bestand" class="button-bestand tab-button">
+                        <span>Berechnung aus Bestand"</span></button>
+                </li>
+                <li  onclick="onChangeMenu('tabs_accessories')">
+                    <button id="button-accessories" class="button-accessories tab-button"><b></b>
+                    </button>
+                </li>
+                <li  onclick="onChangeMenu('tabs_report')">
+                    <button id="button-report" class="button-report tab-button">
+                        <b></b></button>
+                </li>
+            </ul>
+        </div>
+
+        <div style="display: none; position: fixed; width: 45%" class="ui-state-checked ui-corner-all cal_message "><p
+                style="font-size:small"><span class="ui-icon ui-icon-alert"
+                                              style="float: left; margin-right: .2em;"></span>
+            <strong>Meldung:&nbsp;</strong>Artikel wurde aufgenommen!</p>
+        </div>
+
+        <div class="tabs_container">
+            <div style="display: block" id="tabs_calculation" class="tab tab-calculation">
+
+
+                <div style="padding: 10px 10px 6px 10px;" class="panel-glass-content tab_tab-calculation_div1 panel panels panel-default">
+                    <div>
+                        <div class="row">
+                            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 calculation-header-col">
+                                <div class="form-group ">
+                                    <div class="raumauswahl ">
+                                        <div id="room_select">
+                                            <div class="input-group">
+                                                <span id="raum_auswahl" class=" input-group-addon addon-title heizlast" style="text-align: center">Raumauswahl</span>
+                                                <button class="form-control"
+                                                        style="width: 100%; background-color: #ffffff"
+                                                        id="selected_room" value="20">Auswählen
+                                                </button>
+                                            </div>
+                                            <ul id="rooms"
+                                                style="width: 200px; display: none; position: absolute; z-index: 9999;">
+                                                <ul id="rooms_content" class="rooms_content">
+                                                </ul>
+                                                <script>
+                                                    if (exist(localStorage.getItem('currentRoomSelect'))) {
+                                                        $('#rooms_content').html(localStorage.getItem('currentRoomSelect'));
+                                                    } else {
+                                                        var rooms =
+                                                            '<li><button class="raum_leere room"  id="raum_leere" value="20">Auswählen</button></li>'+
+                                                           '<li><button class="raum_kueche room"  id="raum_kueche" value="20">Küche</button></li>' +
+                                                            '<li><button class="room raum_wohn"   id="raum_wohn" value="20">Wohnraum</button></li>' +
+                                                            '<li><button class="room raum_schlaf"   id="raum_schlaf" value="20">Schlafzimmer</button></li>' +
+                                                            '<li><button class="room raum_kind"   id="raum_kind" value="20">Kinderzimmer</button></li>' +
+                                                            '<li><button class="room raum_bad"   id="raum_bad" value="24">Bad</button></li>' +
+                                                            '<li><button class="room raum_flur"   id="raum_flur" value="15">Flur</button></li>' +
+                                                            '<li><button class="room raum_treppe"   id="raum_treppe" value="10">Treppe</button></li>' +
+                                                            '<li><button class="room raum_wc"   id="raum_wc" value="20">WC</button></li>';
+                                                        $('#rooms_content').html(rooms);
+                                                    }
+                                                </script>
+                                                <ul>
+                                                    <ul style="padding-bottom: 10px; ">
+                                                        <li style="margin-top: 0px">
+                                                            <div class="form-group ">
+                                                                <div class="input-group">
+                                                                    <input
+                                                                            value=""
+                                                                            placeholder="Neuer Raum"
+                                                                            style="float: left; border: none;"
+                                                                            type="text"
+                                                                            id="room_input" class="form-control">
+                                                                    <span style="background-color: #002D59; color: white; cursor: pointer" id='addRoom_btn' class="input-group-addon  addon-unity addRoom_btn ">+</span>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </ul>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 calculation-header-col">
+                                <div class="form-group">
+                                    <div class="input-group heizlast">
+                                        <span class=" input-group-addon addon-title heizlast">Heizlast des Raumes</span>
+                                        <input class="form-control" id="raum_watt_text"
+                                               type="text"
+                                               value="1000"/>
+                                        <span class="input-group-addon addon-unity">Watt</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 calculation-header-col">
+                                <div class="form-group temp_vor">
+                                    <div class="input-group ">
+                                        <span id="temp_vor" class="addon-text input-group-addon addon-title temp_vor">Vorlauftemperatur</span>
+                                        <input class="form-control" id="temp_vor_text"
+                                               type="text"
+                                               value="70"/>
+                                        <span class="input-group-addon addon-unity">°C</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-4 col-md-4 hidden-sm "></div>
+                            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 ">
+                                <div class="form-group heizk_selectbox">
+                                    <div class="input-group ">
+                                        <span id="" class="addon-text input-group-addon heizlast addon-title">Heizlast aufteilen auf</span>
+                                        <select class="form-control" id="heizk_selectbox">
+                                            <option value="1" selected>1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 ">
+                                <div class="form-group temp_rueck">
+                                    <div class="input-group ">
+                                        <span id="temp_rueck" class="addon-text input-group-addon addon-title temp_rueck">Rücklauftemperatur</span>
+                                        <input class="form-control"
+                                               id="temp_rueck_text" type="text"
+                                               value="55"/>
+                                        <span class="input-group-addon addon-unity">°C</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-4 col-md-4 hidden-sm"></div>
+                            <div class="col-lg-4 col-md-4 hidden-sm"></div>
+                            <div class="col-lg-4 col-md-4 col-sm-6  hidden-xs  calculation-header-col">
+                                <div class="form-group temp">
+                                    <div class="input-group ">
+                                        <span id="temp" class="addon-text input-group-addon addon-title temp">Raumtemperatur</span>
+                                        <input id="temp_text" class="form-control"
+                                               type="text"
+                                               value="20"/>
+                                        <span class="input-group-addon addon-unity">°C</span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: block" class="content_profil_plan">
+                    <div class=" ">
+                        <div class="matrix-view" style="font-size: small; width: 56%;float:left">
+
+                            <div style="display: none" class='panel panels panel-default matrix_table matrix_table_pro_plan'>
+                                <div style="display: block; height: 100%" id="loadingImg_auswahl"
+                                     class="loadingImg_auswahl">
+                                    <img src="images/spinner.gif" width="50%">
+                                    <p>Daten werden geladen...</p>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!----ventil_panel start --->
+
+<div style=" width: 43%; float:right; padding: 0px; margin-left: 1%"
+                             class="right_panel info_panel panel panels panel-default">
+                            <!--
+                            <div style="width: 100%;  background-color:#3C3C3B " class="panel-heading">
+
+                                <div style=" float: left; width: 40%"><p id="ventil_title">VC-Profil</p></div>
+                                <span class="">HLT:</span>
+                                <div style=" float: right; width: 48%"><p id="placeHolderHLT">000/000/00</p></div>
+
+                            </div>
+                            -->
+
+                            <div style="width: 100%" class=" panel-body">
+
+
+                                <div style="padding-top: 10px; margin-bottom: 10px" class="ventil_panel">
+                                    <div style="text-align: left;">
+                                        <p class="ventil_kopf" id="ventil_kopf">Thermostatkopf</p>
+                                        <form   id="radioForm">
+                                            <input style="height: auto; width: 80px; margin-right:20px" value="1" type="radio" value=""
+                                                   name="thermostatkopf" checked="checked"><span
+                                                class="ventil_fluessig"
+                                                id="ventil_fluessig">Flüssigkeitsfühlerelement</span><br/>
+                                                   <input style="height: auto; width: 80px;  margin-right:20px" value="2" type="radio" value=""
+                                                   name="thermostatkopf"><span
+                                                class="ventil_gas" id="ventil_gas">Gasfühlerelement</span>
+                                        </form>
+                                    </div>
+                                    <p style="padding-top: 10px; padding-bottom: 10px" class="ventil_pre" id="ventil_pre">Berechnung der Ventileinstellung
+                                        für den
+                                        Hydraulischen Abgleich</p>
+                                    <table style="text-align: center;" id="table-ventil-settings" class="panels">
+                                        <tr>
+                                            <th><span class="ventil_druck"
+                                                      id="ventil_druck">Ventildifferenzdruck</span></th>
+                                            <th><span class="ventil_kv" id="ventil_kv">kv-Wert</span></th>
+                                            <th><span style="text-align: center" class="ventil_ventil"
+                                                      id="ventil_ventil">Einstellzahl</span></th>
+                                        </tr>
+
+                                        <tr>
+                                            <td><input class="form-control center-block" style="width: 80px"  type="text" id="ventildif_text" value="100"/></td>
+                                            <td><input class="form-control center-block" style="width: 80px" type="text" id="KV_text" disabled  value="0.1"/></td>
+                                            <td style="padding-left: 15%">
+                                                <button id="einstellzahlButton1">
+                                                    N1
+                                                </button>
+
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td style="padding-left: 15%"><button id="einstellzahlButton2">
+                                                U3
+                                            </button></td>
+                                        </tr>
+                                    </table>
+
+                                    <div style="margin-top: 10px" id="ventil_info" >
+                                        <div style="padding: 3%; height: 70%">
+                                            <div id="ventil_placeHolder_1">
+                                                    <span class="ventil_einbau_vorein"
+                                                          id="ventil_einbau_vorein"></span>&nbsp;<span
+                                                    class="ventilvoreinstellung"
+                                                    id="ventilvoreinstellung">&nbsp;</span><span
+                                                    id="ventil_liefer"></span>
+                                            </div>
+                                            <div id="ventil_placeHolder_2">
+                                                <p class="ventil_liefer2" id="ventil_liefer2"></p>
+                                            </div>
+                                            <div id="ventil_placeHolder_3">
+                                                <p class="ventil_laut" id="ventil_laut"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="width: 100%" class="info_content info_plan_profil">
+                                </div>
+                                <!----ventil_panel end --->
+                        </div>
+                        </div>
+                        <div>
+                        </div>
+                    </div>
+                </div>
+                <!----therm_content start ---->
+
+                <div style="color: #555555; padding-top: 5px" class="therm_content ">
+                    <div >
+                        <div>
+                            <div class="row rows">
+                                <div  class=" col-lg-6 col-md-6 col-sm-6 col-xs-12 ">
+                                    <div class="matrix_table panel panels panel-default" id="anschluss_table">
+                                        <div class="loadingImg_auswahl">
+                                            <img src="images/spinner.gif" width="50%">
+                                            <p class="daten_laed">Daten werden geladen...</p>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                    <div style="min-height: 80px" class="info_panel panel panels panel-default col-lg-6  col-md-6 col-sm-6 col-xs-12">
+                                        <div style="margin-right: 15px" class="info_content therm" id="info_therm">
+
+                                        </div>
+                                    </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                    <!----therm_content end --->
+                </div>
+            </div>
+
+
+            <div style="display:none" id="tabs_bestand" class="tab tab-bestand fade in">
+                <div class="tabs_container_bestand">
+                    <div id="tabs">
+                        <ul class="row" style="text-align: center; padding: 0px">
+                            <li style="margin: 0px"  class="col-lg-6 col-md-6 col-sm-12 col-xs-12 " ><a style="width: 100%" class="bestand_bedarf"
+                                                      id="bestand_bedarf" href="#tabs-1">Wärmebedarfsabschätzung</a>
+                            </li>
+                            <li style="margin: 0px"  class="col-lg-6 col-md-6 col-sm-12 col-xs-12 "><a style="width: 100%; border-collapse: collapse"
+                                                      class="bestand_radiator" id="bestand_radiator"
+                                                      href="#tabs-2">Guss- oder Stahlradiatoren</a></li>
+                        </ul>
+
+                        <div style="" id="tabs-1" class="panel panels panel-default">
+                            <div class="row">
+
+
+                                <div style="padding: 20px"><p class="msg_bestand_bedarf"
+                                                                     id="msg_bestand_bedarf"></p>
+                                </div>
+
+                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 ">
+                                    <table style="margin-bottom: 30px; width: 100%">
+                                        <tr>
+                                            <th class="bestand_baujahr"></th>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <button style="width: 100%; background-color: #3c3c3b; color: #000; border: 1px solid #7e7e7e !important;"
+                                                        id="bis_1977"
+                                                        class="ui-button jahr">bis 1977
+                                                </button>
+                                            </td>
+                                        <tr>
+                                        <tr>
+                                            <td>
+                                                <button style="width: 100%; border: 1px solid #7e7e7e !important;" id="1877-1982" class="ui-button jahr">
+                                                    1877-1982
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <button style="width: 100%; border: 1px solid #7e7e7e !important;" id="1982-1994" class="ui-button jahr">
+                                                    1982-1994
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <button style="width: 100%; border: 1px solid #7e7e7e !important;" id="ab_1995" class="ui-button jahr">ab
+                                                    1995
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 calculation-header-col" style="margin-top: 21px;">
+                                    <div class="form-group ">
+                                        <div class="input-group">
+                                            <span id="bestand_raumgroesse"
+                                                  class="addon-text input-group-addon addon-title bestand_raumgroesse">Raumgröße</span>
+                                            <input class="form-control"
+                                                   id="raum_groesse" type="text"
+                                                   value="0"/>
+                                            <span class="input-group-addon addon-unity">m&sup2;</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12 calculation-header-col" style="margin-top: 21px;">
+                                    <div class="form-group ">
+                                        <div class="input-group">
+                                            <span id="leistung"
+                                                  class="addon-text input-group-addon addon-title leistung">Wärmeleistung</span>
+                                            <input style=" " disabled id="bestand_waermeleistung"
+                                                   type="text" class="form-control">
+                                            <span class="input-group-addon  addon-unity">Watt</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                        <div id="tabs-2" class="panel panels panel-default">
+                            <div class="row">
+                                <div style="padding: 20px"><p class="msg_bestand_radiator"
+                                                                     id="msg_bestand_radiator"></p>
+                                </div>
+
+                                <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12 calculation-header-col">
+                                    <div class="form-group ">
+                                        <div class="input-group">
+                                            <span id="bestand_hohe"
+                                                  class="addon-text input-group-addon addon-title bestand_hohe">Höhe</span>
+                                            <input style=" " id="bestand_hohe_text" type="text"
+                                                   class="form-control">
+                                            <span class="input-group-addon  addon-unity">mm</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+
+                                <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12 calculation-header-col">
+                                    <div class="form-group ">
+                                        <div class="input-group">
+                                            <span id="bestand_temp_vor"
+                                                  class="addon-text input-group-addon addon-title temp_vor">Vorlauftemperatur</span>
+                                            <input style=" "  id="bestand_temp_vor_text"
+                                                   type="text" class="form-control">
+                                            <span class="input-group-addon  addon-unity">°C</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="row">
+                            
+                                <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12 calculation-header-col">
+                                    <div class="form-group ">
+                                        <div class="input-group">
+                                            <span id="bestand_tiefe"
+                                                class="addon-text input-group-addon addon-title bestand_tiefe">Tiefe</span>
+                                            <input style=" " id="bestand_tiefe_text" type="text"
+                                                class="form-control">
+                                                <span class="input-group-addon  addon-unity">mm</span>
+                                                </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12 calculation-header-col">
+                                    <div class="form-group ">
+                                        <div class="input-group">
+                                            <span id="bestand_temp_rueck"
+                                                  class="addon-text input-group-addon addon-title temp_rueck">Rücklauftemperatur</span>
+                                            <input style=" " id="bestand_temp_rueck_text"
+                                                   type="text" class="form-control">
+                                            <span class="input-group-addon  addon-unity">°C</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12 calculation-header-col">
+                                    <div class="form-group ">
+                                        <div class="input-group">
+                                            <span id="leistung2"
+                                                  class="addon-text input-group-addon addon-title temp_vor">Wärmeleistung</span>
+                                            <input style=" " disabled id="radiator_leistung_text"
+                                                   type="text" class="form-control">
+                                            <span class="input-group-addon  addon-unity">Watt</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12 calculation-header-col"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12 calculation-header-col">
+                                    <div class="form-group ">
+                                        <div class="input-group">
+                                            <span id="bestand_gliederanzahl"
+                                                class="addon-text input-group-addon addon-title bestand_gliederanzahl">Gliederanzahl</span>
+                                            <input style=" " id="bestand_glieder_text"
+                                                type="text" class="form-control">
+                                                </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12 calculation-header-col">
+                                    <div class="form-group ">
+                                        <div class="input-group">
+                                            <span id="temp_raum"
+                                                  class="addon-text input-group-addon addon-title temp_raum">Raumtemperatur</span>
+                                            <input style=" " id="bestand_temp_raum_text"
+                                                   type="text" class="form-control">
+                                            <span class="input-group-addon  addon-unity">°C</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12 calculation-header-col"></div>
+
+                            </div>
+
+                        </div>
+                        <button id="bestand_save" class="ui-button"
+                                style="float: right;  border: 1px solid #7e7e7e !important;">
+                            Übernehmen
+                        </button>
+
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-----ACCESSOIRES SATRT ---->
+            <div style="display: none; padding: 5px;" id="tabs_accessories" class="tab tab-accessories">
+                <div>
+                    <h1 class="title">Zubehör wählen</h1>
+
+                    <div>
+                        <h4 style="float: left; padding-left: 15px" class="zubehoert_profil" id="zubehoert_profil">Profil</h4>
+
+                        <div style="display: block" class="container">
+                            <ul class="panel-group nav nav-pills nav-stacked" id="accordion" >
+                                <li class="panel panels">
+                                    <button class=" thermo_ventil_label header ui-button zubehoer accordion-toggle " href="#collapse1" data-toggle="collapse" data-parent="#accordion">
+                                        Zubehör<span class="glyphicon glyphicon-triangle-right"></span>
+
+                                    </button>
+                                    <div id="collapse1" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <div class="tzubehoert zubehoert_table">
+                                                <div style="display: block;" class="loadingImg_utils">
+                                                    <img src="images/spinner.gif" width="30%">
+                                                    <p style="padding-left: 0%" class="loading_label"> Daten werden
+                                                        geladen...</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li class="panel panels">
+                                    <button class="thermo_ventil_label header ui-button thermo_ventil_label" href="#collapse2" data-toggle="collapse" data-parent="#accordion">
+                                        Thermostatköpfe und Ventile<span class="glyphicon glyphicon-triangle-right"></span>
+
+                                    </button>
+
+                                    <div id="collapse2" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <div class="tzubehoert zubehoert_thermoVentil">
+                                                <div style="display: block;" class="loadingImg_utils">
+                                                    <img src="images/spinner.gif" width="30%">
+                                                    <p style="padding-left: 0%" class="loading_label"> Daten werden
+                                                        geladen...</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li class="panel panels">
+                                    <button class="thermo_ventil_label header ui-button thermo_ventil_label heizkoerperbefestigung" href="#collapse3" data-toggle="collapse" data-parent="#accordion">
+                                        Heizkörperbefestigung<span class="glyphicon glyphicon-triangle-right"></span>
+                                    </button>
+                                    <div id="collapse3" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <div class="tzubehoert zubehoert_Heizkoerper">
+                                                <div style="display: block;" class="loadingImg_utils">
+                                                    <img src="images/spinner.gif" width="30%">
+                                                    <p style="padding-left: 0%" class="loading_label"> Daten werden
+                                                        geladen...</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li class="panel panels">
+                                    <button class=" thermo_ventil_label header ui-button thermo_ventil_label heizkoerperbefestigung" href="#collapse4" data-toggle="collapse" data-parent="#accordion">
+                                        Heizkörperanbindung<span class="glyphicon glyphicon-triangle-right"></span>
+                                    </button>
+
+                                    <div id="collapse4" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <div class="tzubehoert zubehoert_heizkörperanbindung">
+                                                <div style="display: block;" class="loadingImg_utils">
+                                                    <img src="images/spinner.gif" width="30%">
+                                                    <p style="padding-left: 0%" class="loading_label"> Daten werden
+                                                        geladen...</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-----ACCESSOIRES END ---->
+            <div style="display: none;" id="tabs_report" class="tab tabs_report ">
+                <div  style="display: block; height: 100%; width: 100%" id="report">
+                    <h3 class="reportlist_label">Reportliste<span id="report_list_name"></span></h3>
+                    <div style="border: solid 0.2px #3c3c3b;" class="panel panels table-responsive">
+                        <table id="report_table">
+                            <thead class="fixedHeader">
+                            <tr>
+                                <th class="raum" id="raum">Raum</th>
+                                <th class="stueck">Anzahl</th>
+                                <th class="prodno">Artikelnr</th>
+                                <th style='text-align: left' class="heizk">Heizkörper</th>
+                                <th style="visibility: visible" class="">Temperatur</th>
+                                <th style='text-align: left'>H/L/T</th>
+                                <th class="leistung">Wärmeleistung</th>
+                                <th class="einstell">Einstellzahl</th>
+                                <th class="ventil_kv">kv-Wert</th>
+                                <th class="ventil">Ventil</th>
+                                <th> </th>
+                            </tr>
+                            </thead>
+                            <tbody id="report_table_tbody" class="scrollContent ">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="zubehoer">Zubehörliste</h3>
+                    <div class="panel panels table-responsive" style="border: solid 0.2px #3c3c3b;margin-bottom: 10px" >
+                        <table id="zubehoer_table">
+                            <thead class="fixedHeader">
+                            <tr>
+                                <th class="stueck">Anzahl</th>
+                                <th class="prodno">Artikelnr.</th>
+                                <th class="kurztext">Kurztext</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody id="utils_table_tbody" class="scrollContent ">
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="menu container">
+                        <div id="rowButton" class="row" style="margin-left: 0px; !important; margin-right: -4px; !important;">
+                                <button id="save_report" class="col-lg-2 col-md-2 col-sm-4  col-xs-12 ui-button ui-widget ui-corner-all " style="width: calc(100%/6 - 2px) !important;">
+                                    <span style="padding-left: 10%" class="glyphicon glyphicon-floppy-save"></span><span
+                                        class="zu_projekt">Speichern</span>
+                                </button>
+                                <button id="open_report" class="col-lg-2 col-md-2 col-sm-4 col-xs-12 ui-button ui-widget ui-corner-all " style="width: calc(100%/6 - 2px) !important;">
+                                    <span class="glyphicon glyphicon-folder-open"></span><span
+                                        class="projekt"
+                                        id="projekt">Laden</span>
+                                </button>
+                                <button id="send_report"
+                                        class="col-lg-2 col-md-2 col-sm-4 col-xs-12 ui-button ui-widget ui-corner-all" style="width: calc(100%/6 - 2px) !important;">
+                                    <span class="glyphicon glyphicon-send"></span><span
+                                        name="send_report">Senden</span>
+                                </button>
+                                <button id="open_shop"
+                                        class="col-lg-2 col-md-2 col-sm-4 col-xs-12 ui-button ui-widget ui-corner-all" style="width: calc(100%/6 - 2px) !important;">
+                                    <span class="glyphicon glyphicon-shopping-cart"></span><span
+                                        class="onlineshop">Onlineshop</span>
+                                </button>
+                                <button id="delete_report"
+                                        class="col-lg-2 col-md-2 col-sm-4 col-xs-12 ui-button ui-widget ui-corner-all" style="width: calc(100%/6 - 2px) !important;">
+                                    <span class="glyphicon glyphicon-trash"></span><span
+                                        class="remove_all_reports">Löschen</span>
+                                </button>
+                                <button id="print_report"
+                                        class="col-lg-2 col-md-2 col-sm-4 col-xs-12  ui-button ui-widget ui-corner-all" style="width: calc(100%/6 - 2px) !important;">
+                                    <span class="glyphicon glyphicon-print"></span><span
+                                        class="drucken">Drucken</span>
+                                </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="height: 100%; display: none; overflow: hidden" id="shop-panel" class="panel de">
+
+                    <!----
+                     <div style="height:40px; background-color: #002D59; cursor: pointer" id="back-to-report">
+                                            <h3 name="zurueck" id="zurueck"
+                                                style="font-size: 1.0em; color: #FFFFFF; background-color: transparent; font-weight: lighter; cursor: pointer; line-height: 40px">
+                                                << ZURÜCK
+                                                ZUM REPORT</h3>
+                                        </div>
+                                        <div id="shop-content" style="height: 95%; width: 100%; overflow: hidden"><div style="display: block" class="loadingImg_auswahl"><img src="images/spinner.gif" width="50%"><p>Shop wird geöffnet...</p></div>
+
+                                            <iframe name="login-frame1" id="login-frame1"
+                                                    style="display:none; overflow-x: hidden; border: none" width="100%"
+                                                    height="95%;"
+                                                    scrolling="yes"
+                                                    src="">
+                                            </iframe>
+
+
+                                        </div>
+                                       ------->
+
+
+                    <div id="loginpage" style="display: none">
+                        <FORM target="login-frame" id="IDS-FORM"
+                              action="https://www.onlineshop.buderus.de/ESALES/login_ids.htm"
+                              method='post'
+                              accesskey=''
+                              enctype='multipart/form-data; charset=ISO-8859-1' accept-charset='UTF-8'>
+                            <INPUT type="hidden" name='kndnr' id="kundennummer" value='Kundennummer'>
+                            <INPUT type="hidden" name='pw_kunde' id="passwort" value='Passwort'>
+                            <INPUT type="hidden" name='action' value='WKS'>
+                            <INPUT type="hidden" name='hookurl'
+                                   value='https://www.bestellservice.buderus.de/ids_test/ids.htm?guid=123'>
+                            <INPUT type="hidden" name='name_kunde' value=''>
+                            <INPUT type="hidden" name='version' value='1.2'>
+                            <INPUT type="hidden" name='warenkorb' id='warenkorbID2' value='<?xml version="1.0" encoding="UTF-8"?>
+			<Warenkorb xmlns="http://www.itek.de/Shop-Anbindung/Warenkorb/"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation="http://www.itek.de/Shop-Anbindung/Warenkorb/warenkorb.xsd">
+			<WarenkorbInfo>
+			<Date></Date>
+			<Time></Time>
+			<RueckgabeKZ></RueckgabeKZ>
+			<Version>1.2</Version>
+			</WarenkorbInfo>
+			<Order>
+			<OrderInfo>
+			<InquiryNo></InquiryNo>
+			<PartNo></PartNo>
+			<OrderConfNo></OrderConfNo>
+			<DeliveryDate></DeliveryDate>
+			<ModeOfShipment>Lieferung</ModeOfShipment>
+			<Cur>EUR</Cur>
+			<ZusatzText></ZusatzText>
+			<Kommission></Kommission>
+			</OrderInfo>
+			<SupplierInfo>
+			<IDNo></IDNo>
+			<Address>
+			<Name1></Name1>
+			<Name2></Name2>
+			<Street> 1</Street>
+			<PCode></PCode>
+			<City></City>
+			<Country></Country>
+			<ILN></ILN>
+			<Contact></Contact>
+			<Phone></Phone>
+			<Fax></Fax>
+			<Email></Email>
+			</Address>
+			</SupplierInfo>
+			<CustomerInfo>
+			<IDNo></IDNo>
+			<Address>
+			<Name1></Name1>
+			<Name2></Name2>
+			<Name3></Name3>
+			<Name4></Name4>
+			<Street></Street>
+			<PCode></PCode>
+			<City></City>
+			<Country></Country>
+			<ILN></ILN>
+			<Contact></Contact>
+			<Phone></Phone>
+			<Fax></Fax>
+			<Email></Email>
+			</Address>
+			</CustomerInfo>
+			<DeliveryPlaceInfo>
+			<Address>
+			<Name1></Name1>
+			<Name2></Name2>
+			<Name3></Name3>
+			<Name4></Name4>
+			<Street></Street>
+			<PCode></PCode>
+			<City></City>
+			<Country></Country>
+			<ILN></ILN>
+			<Contact></Contact>
+			<Phone></Phone>
+			<Fax></Fax>
+			<Email></Email>
+			</Address>
+			</DeliveryPlaceInfo>
+			%%%CARTITEMS%%%
+			</Order>
+			</Warenkorb>'>
+                        </FORM>
+
+
+                    </div>
+
+
+                </div>
+
+            </div>
+        </div>
+        <div class="transparent-layer"></div>
+
+    </div>
+</div>
+<footer>
+    <p style="float:right; padding-right:2%">
+        <button class="footerButton" onclick="datenschutzPop();">Datenschutz</button> &nbsp; &nbsp; Version: 0.0.9
+    </p>
+</footer>
+<div id="datenschutzContainer">
+<div id="Datenschutz">
+    <div id="datenschutzheader">
+        <h4>Datenschutz</h4>
+        <img src="images/icon-close.png" onclick="datenschutzclose();">
+    </div>
+    <div id="datenschutzInthalt">
+        <h3>Datenschutzhinweise</h3>
+        <p>Die Bosch Thermotechnik GmbH (im Folgenden „Bosch“ bzw. „Wir“ oder "Uns") freut sich über Ihren Besuch unserer
+            Internetseiten sowie Mobil-Applikationen (zusammen auch "Online-Angebot") und über Ihr Interesse an unserem
+            Unternehmen und unseren Produkten.</p>
+        <h4>Bosch respektiert Ihre Privatsphäre</h4>
+        <p>Der Schutz Ihrer Privatsphäre bei der Verarbeitung personenbezogener Daten sowie die Sicherheit aller Geschäftsdaten
+             ist uns ein wichtiges Anliegen, das wir in unseren Geschäftsprozessen berücksichtigen. Wir verarbeiten personenbezogene
+            Daten, die bei Ihrem Besuch unserer Online-Angebote erhoben werden, vertraulich und nur gemäß den gesetzlichen
+            Bestimmungen.</p>
+        <p>Datenschutz und Informationssicherheit sind Bestandteil unserer Unternehmenspolitik.</p>
+        <h4>Verantwortlicher</h4>
+        <p>Verantwortlicher für die Verarbeitung Ihrer Daten ist Bosch; Ausnahmen werden in diesen Datenschutzhinweisen erläutert.<br>
+            Unsere Kontaktdaten lauten wie folgt:<br>
+            Bosch Thermotechnik GmbH<br>
+            TTDB/SBC1<br>
+            Sophienstraße 30-32<br>
+            35576 Wetzlar
+        </p>
+        <h3>Verarbeitung personenbezogener Daten</h3>
+        <h4>Grundsätze</h4>
+        <p>Personenbezogene Daten sind alle Informationen, die sich auf eine identifizierte oder identifizierbare natürliche
+            Person beziehen, also beispielsweise Namen, Anschriften, Telefonnummern, E-Mail-Adressen, Vertrags-, Buchungs- und
+            Abrechnungsdaten, die Ausdruck der Identität einer Person sind.</p>
+        <p>Wir erheben, verarbeiten und nutzen personenbezogene Daten (inklusive IP-Adressen) nur dann, wenn hierfür eine
+            gesetzliche Rechtsgrundlage gegeben ist oder Sie uns diesbezüglich, z. B. im Rahmen einer Registrierung, Ihre
+            Einwilligung erteilt haben.</p>
+        <p>Es werden keine personenbezogenen Daten verarbeitet.</p>
+        <h4>Verarbeitungszwecke und Rechtsgrundlagen</h4>
+        <p>Wir und von uns beauftragte Dienstleister verarbeiten Ihre personenbezogenen Daten für folgende
+            Verarbeitungszwecke:</p>
+        <ul>
+            <li>Bereitstellung dieses Online-Angebots
+                <p>(Rechtsgrundlage: Berechtigtes Interesse unsererseits an Direktmarketing, solange dies im Einklang
+                    mit datenschutzrechtlichen und wettbewerbsrechtlichen Vorgaben erfolgt).</p></li>
+            <li>Zur Ermittlung von Störungen und aus Sicherheitsgründen<p>
+                (Rechtsgrundlagen: Erfüllung unserer rechtlichen Verpflichtungen im Bereich Datensicherheit und berechtigtes
+                Interesse an der Beseitigung von Störungen und der Sicherheit unserer Angebote).
+            </p></li>
+
+            <li>Wahrung und Verteidigung unserer Rechte <p>(Rechtsgrundlage: Berechtigtes Interesse unsererseits an Geltendmachung
+                und Verteidigung unserer Rechte).</p></li>
+        </ul>
+        <h3>Log-Dateien</h3>
+        <p>Bei jeder Nutzung des Internets werden von Ihrem Internet-Browser automatisch bestimmte Informationen übermittelt
+            und von uns in sogenannten Log-Dateien gespeichert.</p>
+        <p>Die Log-Dateien werden von uns zur Ermittlung von Störungen und Sicherheitsgründen (z. B. zur Aufklärung von
+            Angriffsversuchen) für einen kurzen Zeitraum gespeichert und danach gelöscht. Log-Dateien, deren weitere
+            Aufbewahrung zu Beweiszwecken erforderlich ist, sind von der Löschung ausgenommen bis zur endgültigen Klärung
+            des jeweiligen Vorfalls und können im Einzelfall an Ermittlungsbehörden weitergegeben werden.</p>
+        <p>Log-Dateien werden (ohne bzw. ohne vollständige IP-Adresse) auch zu Analysezwecken verwendet; siehe hierzu
+            den Abschnitt Webanalyse.</p>
+        <p>In den Log-Dateien werden insbesondere folgende Informationen gespeichert:</p>
+        <ul>
+            <li>IP-Adresse (Internetprotokoll-Adresse) des Endgeräts, von dem aus auf das Online-Angebot zugriffen wird;</li>
+            <li>Internetadresse der Website, von der aus das Online-Angebot aufgerufen wurde (sog. Herkunfts- oder Referrer-URL);</li>
+            <li>Name des Service-Providers, über den der Zugriff auf das Online-Angebot erfolgt;</li>
+            <li>Name der abgerufenen Dateien bzw. Informationen;</li>
+            <li>Datum und Uhrzeit sowie Dauer des Abrufs;</li>
+            <li>übertragene Datenmenge;</li>
+            <li>Betriebssystem und Informationen zum verwendeten Internet-Browser einschließlich installierter
+                Add-Ons (z. B. für den Flash Player);</li>
+            <li>http-Status-Code (z. B. "Anfrage erfolgreich" oder "angeforderte Datei nicht gefunden").</li>
+        </ul>
+        <h3>Kinder</h3>
+        <p>Dieses Online-Angebot richtet sich nicht an Kinder unter 16 Jahren.</p>
+        <h2>Weitergabe von Daten</h2>
+        <h3>Weitergabe von Daten an andere Verantwortliche</h3>
+        <p>Ihre personenbezogenen Daten werden von uns grundsätzlich nur dann an andere Verantwortliche übermittelt, soweit
+            dies zur Vertragserfüllung erforderlich ist, wir oder der Dritte ein berechtigtes Interesse an der Weitergabe
+            haben oder Ihre Einwilligung hierfür vorliegt. Einzelheiten zu den Rechtsgrundlagen finden Sie im Abschnitt
+            Verarbeitungszwecke und Rechtsgrundlagen. Dritte können auch andere Unternehmen der Bosch-Gruppe sein. Sofern
+            Daten an Dritte auf Basis eines berechtigten Interesses übermittelt werden, wird dies in diesen Datenschutzhinweisen
+            erläutert.</p>
+        <p>Darüber hinaus können Daten an andere Verantwortliche übermittelt werden, soweit wir aufgrund gesetzlicher
+            Bestimmungen oder durch vollstreckbare behördliche bzw. gerichtliche Anordnung hierzu verpflichtet sein sollten.</p>
+        <h3>Dienstleister (allgemein)</h3>
+        <p>Wir beauftragen externe Dienstleister mit Aufgaben wie Verkaufs- und Marketingservices, Vertragsmanagement,
+            Zahlungsabwicklung, Programmierung, Datenhosting und Hotline-Services. Wir haben diese Dienstleister sorgfältig
+            ausgewählt und überwachen sie regelmäßig, insbesondere ihren sorgsamen Umgang mit und die Absicherung der bei ihnen
+            gespeicherten Daten. Sämtliche Dienstleister werden von uns zur Vertraulichkeit und zur Einhaltung der gesetzlichen
+            Vorgaben verpflichtet. Dienstleister können auch andere Unternehmen der Bosch-Gruppe sein.</p>
+        <h3>Dauer der Speicherung; Aufbewahrungsfristen</h3>
+        <p>Wir speichern Ihre Daten grundsätzlich solange, wie dies zur Erbringung unseres Online-Angebots und der damit
+            verbundenen Services erforderlich ist bzw. wir ein berechtigtes Interesse an der weiteren Speicherung haben
+            (z. B. können wir auch nach Erfüllung eines Vertrages noch ein berechtigtes Interesse an postalischem Marketing
+            haben). In allen anderen Fällen löschen wir Ihre personenbezogenen Daten mit Ausnahme solcher Daten, die wir zur
+            Erfüllung rechtlicher Verpflichtungen weiter speichern müssen (z. B. sind wir aufgrund steuer- und
+            handelsrechtlicher Aufbewahrungsfristen verpflichtet, Dokumente wie z. B. Verträge und Rechnungen für
+            einen gewissen Zeitraum vorzuhalten).</p>
+        <h3>Verwendung unserer mobilen Applikationen</h3>
+        <p>Wir stellen Ihnen neben unserem Online-Angebot mobile Applikationen ("Apps") zur Verfügung,
+            die Sie auf Ihr mobiles Endgerät herunterladen können. Über die auf Webseiten erhobenen Daten hinaus erheben wir
+            über unsere Apps weitere personenbezogene Daten, die sich spezifisch aus der Verwendung eines mobilen Endgerätes
+            ergeben. Dies geschieht jedoch nur, wenn Sie uns hierzu jeweils Ihre Einwilligung erteilt haben.</p>
+        <h4>Datenverarbeitung durch Betreiber von App Stores</h4>
+        <p>Keine Datenerhebung unsererseits und außerhalb unseres Verantwortungsbereichs ist die Übertragung von Daten wie Nutzername,
+            E-Mail-Adresse und individuelle Gerätekennziffer an einen App Store (z. B. Google Play von Google, App Store
+            von Apple, Galaxy App Store von Samsung) beim Herunterladen der jeweiligen Applikation. Auf diese Datenerhebung
+            und die weitere Verarbeitung durch den App Store als Verantwortlichen haben wir keinen Einfluss.</p>
+
+        <h3>Externe Links</h3>
+        <p>Unser Online-Angebot kann Links zu Internetseiten Dritter enthalten − mit uns nicht verbundener Anbieter enthalten.
+            Nach Anklicken des Links haben wir keinen Einfluss mehr auf die Erhebung, Verarbeitung und Nutzung etwaiger mit
+            dem Anklicken des Links an den Dritten übertragener, personenbezogener Daten (wie zum Beispiel die IP-Adresse oder
+            die URL der Seite, auf der sich der Link befindet), da das Verhalten Dritter naturgemäß unserer Kontrolle entzogen
+            ist. Für die Verarbeitung derartiger personenbezogener Daten durch Dritte übernehmen wir keine Verantwortung.</p>
+        <h3>Sicherheit</h3>
+        <p>Unsere Mitarbeiter und die von uns beauftragten Dienstleistungsunternehmen sind zur Verschwiegenheit und Einhaltung
+            der Bestimmungen der anwendbaren Datenschutzgesetze verpflichtet.</p>
+        <p>Wir treffen alle erforderlichen technischen und organisatorischen Maßnahmen um ein angemessenes Schutzniveau zu
+            gewährleisten und Ihre durch uns verwalteten Daten insbesondere vor den Risiken der unbeabsichtigten oder
+            unrechtmäßigen Vernichtung, Mani-pulation, Verlust, Veränderung oder unbefugter Offenlegung bzw. unbefugtem
+            Zugriff zu schützen. Unsere Sicherheitsmaßnahmen werden entsprechend der technologischen Entwicklung ständig
+            verbessert.</p>
+        <h3>Rechte der Nutzer</h3>
+        <p>Bitte nutzen Sie zur Geltendmachung Ihrer Rechte die Angaben im Abschnitt Kontakt. Bitte stellen Sie dabei sicher,
+            dass uns eine eindeutige Identifizierung Ihrer Person möglich ist.</p>
+        <h4>Informations- und Auskunftsrecht:</h4>
+        <p>Sie haben das Recht, von uns Informationen über die Verarbeitung Ihrer Daten zu erhalten. Hierzu können Sie ein Recht
+            auf Auskunft in Bezug auf die personenbezogenen Informationen, die wir von Ihnen verarbeiten, geltend machen.</p>
+        <h4>Berichtigungs- und Löschungsrecht:</h4>
+        <p>Sie können von uns die Berichtigung falscher Daten und - soweit die gesetzlichen Voraussetzungen erfüllt sind - Vervollständigung oder Löschung Ihrer Daten verlangen.
+            Dies gilt nicht für Daten, die für Abrechnungs- und Buchhaltungszwecke erforderlich sind oder der gesetzlichen
+            Aufbewahrungspflicht unterliegen. Soweit der Zugriff auf solche Daten nicht benötigt wird, wird deren Verarbeitung
+            aber eingeschränkt (siehe nachfolgend).
+        </p>
+        <h4>Einschränkung der Verarbeitung:</h4>
+        <p>Sie können von uns - soweit die gesetzlichen Voraussetzungen erfüllt sind - verlangen, dass wir die
+            Verarbeitung Ihrer Daten einschränken.</p>
+        <h4>Widerspruch gegen Datenverarbeitung:</h4>
+        <p>Zudem haben Sie das Recht, jederzeit der Datenverarbeitung durch uns zu widersprechen.
+            Wir werden dann die Verarbeitung Ihrer Daten einstellen, es sei denn, wir können - gemäß den gesetzlichen
+            Vorgaben - zwingende schutzwürdige Gründe für die Weiterverarbeitung nachweisen, welche Ihre Rechte überwiegen.</p>
+        <h4>Widerruf der Einwilligung:</h4>
+        <p>Sofern Sie uns eine Einwilligung in die Verarbeitung Ihrer Daten erteilt haben, können Sie diese jederzeit mit
+            Wirkung für die Zukunft widerrufen. Die Rechtmäßigkeit der Verarbeitung Ihrer Daten bis zum Widerruf bleibt
+            hiervon unberührt.</p>
+        <h3>Datenportabilität:</h3>
+        <p>Sie haben weiterhin das Recht, Daten, die Sie uns zur Verfügung gestellt haben, in einem strukturierten,
+            gängigen und maschinenlesbaren Format übermittelt zu erhalten bzw. - soweit technisch machbar - zu verlangen,
+            dass die Daten einem Dritten übermittelt werden.</p>
+        <h3>Beschwerderecht bei der Aufsichtsbehörde:</h3>
+        <p>Sie haben das Recht, eine Beschwerde bei einer Datenschutzbehörde einzureichen. Sie können sich dazu an die
+            Datenschutzbehörde wenden, die für Ihren Wohnort bzw. Ihr Bundesland zuständig ist oder an die für uns
+            zuständige Datenschutzbehörde. Dies ist:</p>
+        <p>
+            Der Hessische Datenschutzbeauftragte<br>
+            Prof. Dr. Michael Ronellenfitsch<br>
+            Gustav-Stresemann-Ring 1<br>
+            65189 Wiesbaden<br>
+            <br>
+            Telefon: 06 11/140 80<br>
+            Telefax: 06 11/14 08-900<br><br>
+
+            E-Mail: poststelle@datenschutz.hessen.de<br>
+            Homepage: <a href="http://www.datenschutz.hessen.de" target="_blank">http://www.datenschutz.hessen.de</a>
+        </p>
+        <h3>Änderung des Datenschutzhinweises</h3>
+        <p>Wir behalten uns das Recht vor, unsere Sicherheits- und Datenschutzmaßnahmen zu verändern, soweit dies wegen
+            der technischen Entwicklung erforderlich ist. In diesen Fällen werden wir auch unsere Hinweise zum Datenschutz
+            entsprechend anpassen. Bitte beachten Sie daher die jeweils aktuelle Version unseres Datenschutzhinweises.</p>
+        <h3>Kontakt</h3>
+        <p>Wenn Sie mit uns in Kontakt treten möchten, erreichen Sie uns unter der im Abschnitt "Verantwortlicher"
+            angegebenen Anschrift.</p>
+        <p>Zur Geltendmachung Ihrer Rechte, Meldung von Datenschutzvorfällen sowie für Anregungen und Beschwerden
+            hinsichtlich der Verarbeitung Ihrer personenbezogenen Daten empfehlen wir, dass Sie sich an unseren
+            Konzernbeauftragten für den Datenschutz wenden:</p>
+        <p>
+            Herr<br>
+            Matthias Goebel<br>
+            Konzerndatenschutzbeauftragter<br>
+            Informationssicherheit und Datenschutz Bosch-Gruppe (C/ISP)<br>
+            Robert Bosch GmbH<br>
+            Kronenstrasse 22<br>
+            70173 Stuttgart<br>
+            DEUTSCHLAND<br>
+            oder<br>
+
+            <a href="mailto:Abteilungsbriefkasten.cisp@de.bosch.com.">Abteilungsbriefkasten.cisp@de.bosch.com.</a><br>
+
+        </p>
+    </div>
+
+</div>
+</div>
+</body>
+</html>
+
+
+
+
